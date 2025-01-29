@@ -1,28 +1,56 @@
 extends CharacterBody2D
 
+const SPEED = 30.0
+@onready var sprite = $AnimatedSprite2D
 
-const SPEED = 70.0
-const JUMP_VELOCITY = -400.0
-
+var last_direction = Vector2.ZERO  # Armazena a última direção do jogador
 
 func _physics_process(_delta: float) -> void:
-	# Add the gravity.
-	if not is_on_floor():
-		pass
-		#velocity += get_gravity() * delta
+	var direction = Vector2.ZERO  # Direção do movimento
 
-	# Handle jump.
-	#if Input.is_action_just_pressed("ui_accept") and is_on_floor():
-		#velocity.y = JUMP_VELOCITY
+	# Captura os inputs de movimento
+	if Input.is_action_pressed("ui_right"):
+		direction.x += 1
+	if Input.is_action_pressed("ui_left"):
+		direction.x -= 1
+	if Input.is_action_pressed("ui_down"):
+		direction.y += 1
+	if Input.is_action_pressed("ui_up"):
+		direction.y -= 1
 
-	# Get the input direction and handle the movement/deceleration.
-	# As good practice, you should replace UI actions with custom gameplay actions.
-	var direction := Input.get_axis("ui_left", "ui_right")
-	if direction:
-		$AnimatedSprite2D.play("idle_left")
-		velocity.x = direction * SPEED
+	# Se houver movimento, atualiza a última direção válida
+	if direction != Vector2.ZERO:
+		last_direction = direction.normalized()
+		velocity = direction * SPEED
+		play_run_animation(direction)
 	else:
-		$AnimatedSprite2D.play("idle_front")
-		velocity.x = move_toward(velocity.x, 0, SPEED)
+		velocity = Vector2.ZERO  # Isso faz com que o personagem pare
+		play_idle_animation()
 
 	move_and_slide()
+
+# Função para animação de idle com base na direção do movimento
+func play_idle_animation():
+	if last_direction.y > 0:
+		sprite.play("idle_front")
+	elif last_direction.y < 0:
+		sprite.play("idle_back")
+	elif last_direction.x < 0:
+		sprite.flip_h = true
+		sprite.play("idle_left")
+	elif last_direction.x > 0:
+		sprite.flip_h = false
+		sprite.play("idle_left")
+
+# Função para animação de movimento (run)
+func play_run_animation(direction):
+	if direction.y > 0:
+		sprite.play("run_front")
+	elif direction.y < 0:
+		sprite.play("run_back")
+	elif direction.x < 0:
+		sprite.flip_h = true
+		sprite.play("run_left")
+	elif direction.x > 0:
+		sprite.flip_h = false
+		sprite.play("run_left")
