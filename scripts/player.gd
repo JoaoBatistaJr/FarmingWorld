@@ -1,6 +1,6 @@
 extends CharacterBody2D
 
-const SPEED = 30.0
+const SPEED = 50.0
 @onready var sprite = $AnimatedSprite2D
 
 var last_direction = Vector2.ZERO  # Armazena a última direção do jogador
@@ -9,13 +9,13 @@ func _physics_process(_delta: float) -> void:
 	var direction = Vector2.ZERO  # Direção do movimento
 
 	# Captura os inputs de movimento
-	if Input.is_action_pressed("ui_right"):
+	if Input.is_action_pressed("key_right"):
 		direction.x += 1
-	if Input.is_action_pressed("ui_left"):
+	if Input.is_action_pressed("key_left"):
 		direction.x -= 1
-	if Input.is_action_pressed("ui_down"):
+	if Input.is_action_pressed("key_down"):
 		direction.y += 1
-	if Input.is_action_pressed("ui_up"):
+	if Input.is_action_pressed("key_up"):
 		direction.y -= 1
 
 	# Se houver movimento, atualiza a última direção válida
